@@ -38,8 +38,12 @@ config :pmaker,
 			app: :pmaker, # main app ( for loading resources etc )
 			port: 8081, # webserver port
 			kind: :bullet, # :bullet | :cowboy
-			parse: nil, # nil | :json | :xml
+			decode: nil, # nil | :json | :callback
+			encode: nil, # nil | :json | :callback
 			crossdomain: true, # true | false
-			callback_module: Pmaker.Example.Bullet # where is callback for events , function &handle_pmaker/1 gets %Pmaker.Request{}, returns %Pmaker.Response{}
+			callback_module: Pmaker.Example.Bullet # where are callbacks functions : 
+			# mandatory &handle_pmaker/1 gets %Pmaker.Request{}, returns %Pmaker.Response{}
+			# optional &decode/1 returns {:ok, term} | {:error, error}
+			# optional &encode/1
 		}
 	]

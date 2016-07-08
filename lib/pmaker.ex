@@ -9,7 +9,8 @@ end
 defmodule Pmaker.Response do
 	defstruct [
 		status: 200,
-		data: ""
+		data: "",
+		encode: true # do or not encode before send
 	]
 end
 defmodule Pmaker do
