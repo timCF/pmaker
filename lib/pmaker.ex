@@ -44,6 +44,12 @@ defmodule Pmaker do
 
 	def get_pg2(%{module: module}), do: "__pmaker__pg2__#{module}__"
 
+	def send2all(res = %Pmaker.Response{}, module) do
+		get_pg2(%{module: module})
+		|> :pg2.get_members
+		|> Enum.each(&(send(&1, res)))
+	end
+
 	defmacro resource_loader([main_app: main_app]) do
 		authfunc = case Application.get_env(:pmaker, :basic_auth) do
 			nil ->
