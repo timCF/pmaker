@@ -1,5 +1,5 @@
-true = Application.get_env(:pmaker, :servers) |> Enum.all?(fn(%{module: module, app: main_app, port: port, kind: kind, decode: decode, encode: encode, crossdomain: crossdomain, callback_module: callback_module}) ->
-	is_binary(module) and is_atom(main_app) and (main_app != nil) and is_integer(port) and (port > 0) and (kind in [:bullet, :cowboy]) and (decode in [nil, :json, :callback]) and (encode in [nil, :json, :callback]) and is_boolean(crossdomain) and is_atom(callback_module) and (callback_module != nil)
+true = Application.get_env(:pmaker, :servers) |> Enum.all?(fn(%{module: module, app: main_app, port: port, kind: kind, decode: decode, encode: encode, crossdomain: crossdomain, callback_module: callback_module, priv_path: priv_path}) ->
+	is_binary(module) and is_atom(main_app) and (main_app != nil) and is_integer(port) and (port > 0) and (kind in [:bullet, :cowboy]) and (decode in [nil, :json, :callback]) and (encode in [nil, :json, :callback]) and is_boolean(crossdomain) and is_atom(callback_module) and (callback_module != nil) and is_binary(priv_path)
 end)
 
 Application.get_env(:pmaker, :servers)
@@ -7,7 +7,7 @@ Application.get_env(:pmaker, :servers)
 	#
 	#	BULLET
 	#
-	(fullconf = %{ module: module, app: main_app, port: port, kind: :bullet, decode: decode, encode: encode, crossdomain: crossdomain, callback_module: callback_module }) ->
+	(fullconf = %{ module: module, app: main_app, port: port, kind: :bullet, decode: decode, encode: encode, crossdomain: crossdomain, callback_module: callback_module, priv_path: priv_path }) ->
 
 		this_webhandler = String.to_atom("Elixir.Pmaker.Servers.#{module}.Handler")
 		this_resourceloader = String.to_atom("Elixir.Pmaker.Servers.#{module}.ResourceLoader")
@@ -15,7 +15,7 @@ Application.get_env(:pmaker, :servers)
 
 		defmodule this_resourceloader do
 			require Pmaker
-			Pmaker.resource_loader([main_app: unquote(main_app)])
+			Pmaker.resource_loader([main_app: unquote(main_app), priv_path: unquote(priv_path)])
 		end
 
 		defmodule this_webhandler do
@@ -93,11 +93,11 @@ Application.get_env(:pmaker, :servers)
 				dispatch = :cowboy_router.compile([
 					{:_, [
 						{"/bullet", :bullet_handler, [{:handler, unquote(this_webhandler)}]},
-						{"/index.html", unquote(this_resourceloader), ["#{ unquote(main_app) |> :code.priv_dir |> :erlang.list_to_binary }/index.html"]},
-						{"/", unquote(this_resourceloader), ["#{ unquote(main_app) |> :code.priv_dir |> :erlang.list_to_binary }/index.html"]},
+						{"/index.html", unquote(this_resourceloader), ["#{ unquote(main_app) |> :code.priv_dir |> :erlang.list_to_binary }#{unquote(priv_path)}/index.html"]},
+						{"/", unquote(this_resourceloader), ["#{ unquote(main_app) |> :code.priv_dir |> :erlang.list_to_binary }#{unquote(priv_path)}/index.html"]},
 						{"/[...]", unquote(this_resourceloader), [nil]}
 					]}])
-				res = {:ok, _} = :cowboy.start_http(:http_test_listener, 5000, [port: unquote(port) ], [env: [ dispatch: dispatch ] ])
+				res = {:ok, _} = :cowboy.start_http(unquote(String.to_atom(module)), 5000, [port: unquote(port) ], [env: [ dispatch: dispatch ] ])
 				Logger.info("HTTP BULLET server started at port #{ unquote(port) }")
 				res
 			end

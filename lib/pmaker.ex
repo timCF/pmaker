@@ -50,7 +50,7 @@ defmodule Pmaker do
 		|> Enum.each(&(send(&1, res)))
 	end
 
-	defmacro resource_loader([main_app: main_app]) do
+	defmacro resource_loader([main_app: main_app, priv_path: priv_path]) do
 		authfunc = case Application.get_env(:pmaker, :basic_auth) do
 			nil ->
 				quote location: :keep do
@@ -81,7 +81,7 @@ defmodule Pmaker do
 			def init(_, req = http_req(path: path), [nil]) when is_binary(path) do
 				case auth?(req) do
 					{true, req} ->
-						filename = "#{ unquote(main_app) |> :code.priv_dir |> :erlang.list_to_binary }#{path}"
+						filename = "#{ unquote(main_app) |> :code.priv_dir |> :erlang.list_to_binary }#{unquote(priv_path)}#{path}"
 						case File.exists?(filename) do
 							true -> {:ok, :cowboy_req.reply(200, [{"Content-Type",:mimetypes.filename(path) |> List.first},{"connection","close"}], File.read!(filename), req) |> elem(1), nil}
 							false -> {:ok, :cowboy_req.reply(404, [{"connection","close"}], "", req) |> elem(1), nil}

@@ -32,18 +32,34 @@ use Mix.Config
 config :logger, level: :debug
 config :pmaker,
 	basic_auth: %{login: "login", password: "password"}, # if needed
+	# can run multiple servers on one OTP app
 	servers: [
 		%{
 			module: "BulletServer", # just server name
 			app: :pmaker, # main app ( for loading resources etc )
-			port: 8081, # webserver port
+			port: 7770, # webserver port
 			kind: :bullet, # :bullet | :cowboy
 			decode: nil, # nil | :json | :callback
 			encode: nil, # nil | :json | :callback
 			crossdomain: true, # true | false
-			callback_module: Pmaker.Example.Bullet # where are callbacks functions : 
+			callback_module: Pmaker.Example.Bullet, # where are callbacks functions :
 			# mandatory &handle_pmaker/1 gets %Pmaker.Request{}, returns %Pmaker.Response{}
 			# optional &decode/1 returns {:ok, term} | {:error, error}
 			# optional &encode/1
+			priv_path: "/html_app1" # path in priv dir for resource loader
+		},
+		%{
+			module: "BulletServer2", # just server name
+			app: :pmaker, # main app ( for loading resources etc )
+			port: 7771, # webserver port
+			kind: :bullet, # :bullet | :cowboy
+			decode: nil, # nil | :json | :callback
+			encode: nil, # nil | :json | :callback
+			crossdomain: true, # true | false
+			callback_module: Pmaker.Example.Bullet, # where are callbacks functions :
+			# mandatory &handle_pmaker/1 gets %Pmaker.Request{}, returns %Pmaker.Response{}
+			# optional &decode/1 returns {:ok, term} | {:error, error}
+			# optional &encode/1
+			priv_path: "/html_app2" # path in priv dir for resource loader
 		}
 	]
