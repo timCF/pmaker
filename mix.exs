@@ -21,6 +21,7 @@ defmodule Pmaker.Mixfile do
 						:mimetypes,
 						:cowboy,
 						:bullet,
+						:maybe,
 					],
      mod: {Pmaker, []}]
   end
@@ -41,6 +42,7 @@ defmodule Pmaker.Mixfile do
 			{:mimetypes, github: "spawngrid/mimetypes"},
 			{:cowboy, github: "ninenines/cowboy", tag: "0.9.0", override: true},
 			{:bullet, github: "timCF/bullet", override: true},
+			{:maybe, github: "timCF/maybe"},
 		]
 	end
 end

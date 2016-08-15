@@ -35,7 +35,7 @@ config :pmaker,
 	# can run multiple servers on one OTP app
 	servers: [
 		%{
-			module: "BulletServer", # just server name
+			module: "BulletServer1", # just server name
 			app: :pmaker, # main app ( for loading resources etc )
 			port: 7770, # webserver port
 			kind: :bullet, # :bullet | :cowboy
@@ -61,5 +61,19 @@ config :pmaker,
 			# optional &decode/1 returns {:ok, term} | {:error, error}
 			# optional &encode/1
 			priv_path: "/html_app2" # path in priv dir for resource loader
+		},
+		%{
+			module: "CowboyServer1", # just server name
+			app: :pmaker, # main app ( for loading resources etc )
+			port: 7772, # webserver port
+			kind: :cowboy, # :bullet | :cowboy
+			decode: :callback, # nil | :json | :callback
+			encode: :callback, # nil | :json | :callback
+			crossdomain: true, # true | false
+			callback_module: Pmaker.Example.Cowboy, # where are callbacks functions :
+			# mandatory &handle_pmaker/1 gets %Pmaker.Request{}, returns %Pmaker.Response{}
+			# optional &decode/1 returns {:ok, term} | {:error, error}
+			# optional &encode/1
+			priv_path: "/html_app3" # path in priv dir for resource loader
 		}
 	]
