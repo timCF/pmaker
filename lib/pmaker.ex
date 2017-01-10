@@ -113,6 +113,17 @@ defmodule Pmaker do
 		end
 	end
 
+	defmacro start_server(%{cacertfile: cacertfile, certfile: certfile, keyfile: keyfile}, module, port, dispatch) when (is_binary(cacertfile) and is_binary(certfile) and is_binary(keyfile)) do
+		quote location: :keep do
+			:cowboy.start_https(unquote(module), 5000, [port: unquote(port), cacertfile: unquote(cacertfile), certfile: unquote(certfile), keyfile: unquote(keyfile)], [env: [ dispatch: unquote(dispatch) ] ])
+		end
+	end
+	defmacro start_server(%{}, module, port, dispatch) do
+		quote location: :keep do
+			:cowboy.start_http(unquote(module), 5000, [port: unquote(port)], [env: [ dispatch: unquote(dispatch) ] ])
+		end
+	end
+
 	defmacro resource_loader([main_app: main_app, priv_path: priv_path]) do
 		quote location: :keep do
 			use Silverb

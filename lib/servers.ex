@@ -54,6 +54,7 @@ Application.get_env(:pmaker, :servers)
 		defmodule this_webserver do
 			use Silverb
 			require Logger
+			require Pmaker
 			def start do
 				dispatch = :cowboy_router.compile([
 					{:_, [
@@ -62,8 +63,8 @@ Application.get_env(:pmaker, :servers)
 						{"/", unquote(this_resourceloader), ["#{ unquote(main_app) |> :code.priv_dir |> :erlang.list_to_binary }#{unquote(priv_path)}/index.html"]},
 						{"/[...]", unquote(this_resourceloader), [nil]}
 					]}])
-				res = {:ok, _} = :cowboy.start_http(unquote(String.to_atom(module)), 5000, [port: unquote(port) ], [env: [ dispatch: dispatch ] ])
-				_ = Logger.info("HTTP BULLET server started at port #{ unquote(port) }")
+				res = {:ok, _} = Pmaker.start_server(unquote(fullconf), unquote(String.to_atom(module)), unquote(port), dispatch)
+				_ = Logger.info("HTTP(S) BULLET server started at port #{ unquote(port) }")
 				res
 			end
 		end
@@ -167,7 +168,7 @@ Application.get_env(:pmaker, :servers)
 									false -> %Pmaker.Request{qs: qs_data}
 									# GET + POST
 									true ->
-										{:ok, req_body, req} = :cowboy_req.body(req)
+										{:ok, req_body, _} = :cowboy_req.body(req)
 										decode(req_body)
 										|> Map.update!(:qs, fn(qs = %{}) -> Map.merge(qs_data, qs) end)
 								end
@@ -187,6 +188,7 @@ Application.get_env(:pmaker, :servers)
 		defmodule this_webserver do
 			use Silverb
 			require Logger
+			require Pmaker
 			def start do
 				dispatch = :cowboy_router.compile([
 					{:_, [
@@ -196,8 +198,8 @@ Application.get_env(:pmaker, :servers)
 						{"/", unquote(this_resourceloader), ["#{ unquote(main_app) |> :code.priv_dir |> :erlang.list_to_binary }#{unquote(priv_path)}/index.html"]},
 						{"/[...]", unquote(this_resourceloader), [nil]}
 					]}])
-				res = {:ok, _} = :cowboy.start_http(unquote(String.to_atom(module)), 5000, [port: unquote(port) ], [env: [ dispatch: dispatch ] ])
-				_ = Logger.info("HTTP COWBOY server started at port #{ unquote(port) }")
+				res = {:ok, _} = Pmaker.start_server(unquote(fullconf), unquote(String.to_atom(module)), unquote(port), dispatch)
+				_ = Logger.info("HTTP(S) COWBOY server started at port #{ unquote(port) }")
 				res
 			end
 		end

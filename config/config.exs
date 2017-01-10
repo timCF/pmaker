@@ -46,7 +46,11 @@ config :pmaker,
 			# mandatory &handle_pmaker/1 gets %Pmaker.Request{}, returns %Pmaker.Response{}
 			# optional &decode/1 returns {:ok, term} | {:error, error}
 			# optional &encode/1
-			priv_path: "/html_app1" # path in priv dir for resource loader
+			priv_path: "/html_app1", # path in priv dir for resource loader
+			# ssl disabled
+			cacertfile: false,
+			certfile: false,
+			keyfile: false,
 		},
 		%{
 			module: "BulletServer2", # just server name
@@ -60,7 +64,11 @@ config :pmaker,
 			# mandatory &handle_pmaker/1 gets %Pmaker.Request{}, returns %Pmaker.Response{}
 			# optional &decode/1 returns {:ok, term} | {:error, error}
 			# optional &encode/1
-			priv_path: "/html_app2" # path in priv dir for resource loader
+			priv_path: "/html_app2", # path in priv dir for resource loader
+			# ssl settings
+			cacertfile: "/ssl/cowboy-ca.crt",
+			certfile: "/ssl/server.crt",
+			keyfile: "/ssl/server.key",
 		},
 		%{
 			module: "CowboyServer1", # just server name
@@ -74,6 +82,10 @@ config :pmaker,
 			# mandatory &handle_pmaker/1 gets %Pmaker.Request{}, returns %Pmaker.Response{}
 			# optional &decode/1 returns {:ok, term} | {:error, error}
 			# optional &encode/1
-			priv_path: "/html_app3" # path in priv dir for resource loader
+			priv_path: "/html_app3", # path in priv dir for resource loader
+			# ssl settings
+			cacertfile: "/ssl/cowboy-ca.crt",
+			certfile: "/ssl/server.crt",
+			keyfile: "/ssl/server.key",
 		}
 	]
